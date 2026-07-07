@@ -10,7 +10,7 @@ import { addOutline, addCircleOutline, checkboxOutline } from 'ionicons/icons';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel,
   IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonText,  ModalController,
-  IonSegment, IonSegmentButton, IonSelect, IonSelectOption
+  IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSearchbar,
 } from '@ionic/angular/standalone';
 import { TaskFormComponent } from 'src/app/shared/components/task-form/task-form.component';
 import { TaskItemComponent } from 'src/app/shared/components/task-item/task-item.component';
@@ -48,6 +48,7 @@ import { CategoryService } from 'src/app/core/services/category.service';
     TaskItemComponent,
     RouterLink,
     AsyncPipe,
+    IonSearchbar,
   ]
 })
 export class TodoListPage implements OnInit {
@@ -62,9 +63,10 @@ export class TodoListPage implements OnInit {
   enableCategories$ = this.remoteConfigService.enableCategories$;
 
   // Estado reactivo de filtros
-  filterSubject = new BehaviorSubject<{ status: 'all' | 'pending' | 'completed', categoryId: string | null }>({
+  filterSubject = new BehaviorSubject<{ status: 'all' | 'pending' | 'completed', categoryId: string | null, searchQuery: string }>({
     status: 'all',
-    categoryId: null
+    categoryId: null,
+    searchQuery: '',
   });
 
   // Combinamos ambos flujos de datos
@@ -76,8 +78,19 @@ export class TodoListPage implements OnInit {
   }).pipe(
     map(({ tasks, categories, filters, enableCategories }) => {
 
-      // Aplicamos filtro de estado
+      // Aplicamos filtro
       let filteredTasks = tasks;
+
+      // Filtro de Búsqueda por Texto se aplica primero por eficiencia
+      if (filters.searchQuery.trim().length > 0) {
+        const query = filters.searchQuery.toLowerCase();
+        filteredTasks = filteredTasks.filter(t =>
+          t.title.toLowerCase().includes(query) ||
+          (t.description && t.description.toLowerCase().includes(query))
+        );
+      }
+
+      // Filtro de estado
       if (filters.status === 'pending') {
         filteredTasks = filteredTasks.filter(t => !t.isCompleted);
       } else if (filters.status === 'completed') {
@@ -110,6 +123,14 @@ export class TodoListPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  // Método para capturar el texto del buscador
+  updateSearchFilter(event: any) {
+    const currentFilters = this.filterSubject.getValue();
+    // El searchbar emite el valor o undefined si lo limpian
+    const query = event.detail.value || '';
+    this.filterSubject.next({ ...currentFilters, searchQuery: query });
   }
 
   // Actualizamos los filtros reactivos según la interacción del usuario
@@ -162,5 +183,7 @@ export class TodoListPage implements OnInit {
   trackById(index: number, task: any): string {
     return task.id;
   }
+
+
 
 }

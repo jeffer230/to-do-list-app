@@ -19,8 +19,16 @@
   <!-- Evaluamos el observable una sola vez -->
   @if (vm$ | async; as vm) {
 
+    <!-- Buscador de texto -->
+    <ion-searchbar
+      mode="ios"
+      placeholder="Buscar tareas..."
+      [debounce]="300"
+      (ionInput)="updateSearchFilter($event)">
+    </ion-searchbar>
+
     <!-- Filtro de estado -->
-    <div class="ion-padding-horizontal ion-padding-top">
+    <div class="ion-padding-horizontal">
       <ion-segment value="all" mode="ios" (ionChange)="updateStatusFilter($event)">
         <ion-segment-button value="all">
           <ion-label>Todas</ion-label>
