@@ -1,10 +1,13 @@
 import { Component, OnInit, inject,ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
 import { ModalController } from '@ionic/angular/standalone';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
-  IonItem, IonInput, IonTextarea, IonButton, IonButtons
+  IonItem, IonInput, IonTextarea, IonButton,
+  IonButtons, IonSelect, IonSelectOption
 } from '@ionic/angular/standalone';
+import { CategoryService } from 'src/app/core/services/category.service';
 
 @Component({
   selector: 'app-task-form',
@@ -14,6 +17,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    AsyncPipe,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -23,13 +27,19 @@ import {
     IonTextarea,
     IonButton,
     IonButtons,
+    IonSelect,
+    IonSelectOption,
   ]
 })
 export class TaskFormComponent implements OnInit {
   private modalCtrl = inject(ModalController);
   private fb = inject(FormBuilder);
+  private categoryService = inject(CategoryService);
 
   taskForm!: FormGroup;
+
+  // Exponemos las categorías
+  categories$ = this.categoryService.categories$;
 
   constructor() {}
 
@@ -41,7 +51,7 @@ export class TaskFormComponent implements OnInit {
         updateOn: 'blur'
       }],
       description: ['', { updateOn: 'blur' }],
-      categoryId: [null] //  categorías
+      categoryId: [null] // Inicia nulo por defecto
     });
   }
 

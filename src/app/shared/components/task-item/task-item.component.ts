@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { IonItem, IonLabel, IonCheckbox, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/angular/standalone';
+import { IonItem, IonLabel, IonCheckbox, IonItemSliding, IonItemOptions, IonItemOption, IonBadge } from '@ionic/angular/standalone';
 import { Task } from 'src/app/shared/models/task.model';
 
 @Component({
@@ -14,7 +14,8 @@ import { Task } from 'src/app/shared/models/task.model';
     IonCheckbox,
     IonItemSliding,
     IonItemOptions,
-    IonItemOption
+    IonItemOption,
+    IonBadge,
   ]
 })
 export class TaskItemComponent {

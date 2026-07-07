@@ -1,3 +1,5 @@
+import { Category } from './category.model';
+
 export interface Task {
   id: string;
   title: string;
@@ -5,4 +7,5 @@ export interface Task {
   isCompleted: boolean;
   categoryId: string | null; // null si es una tarea sin categoría asignada
   createdAt: number; // Timestamp (Date.now())
+  category?: Category; // Relación con la categoría
 }

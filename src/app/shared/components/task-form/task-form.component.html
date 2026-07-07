@@ -24,7 +24,7 @@
     <!-- Mensaje de error visual -->
     @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
       <div class="error-message">
-        <small style="color: var(--ion-color-danger); padding-left: 16px;">
+        <small class="error-message">
           El título es obligatorio (mínimo 3 letras).
         </small>
       </div>
@@ -37,6 +37,29 @@
         formControlName="description"
         placeholder="Detalles adicionales...">
       </ion-textarea>
+    </ion-item>
+
+    <!-- Categoría -->
+    <ion-item class="ion-margin-top">
+      <ion-select
+        label="Categoría"
+        labelPlacement="floating"
+        formControlName="categoryId"
+        interface="action-sheet"
+        cancelText="Cancelar"
+        placeholder="Seleccionar categoría">
+
+        <!-- Opción por defecto para tareas sin categoría -->
+        <ion-select-option [value]="null">Sin categoría</ion-select-option>
+
+        <!-- Iteramos sobre las categorías -->
+        @for (category of categories$ | async; track category.id) {
+          <ion-select-option [value]="category.id">
+            {{ category.name }}
+          </ion-select-option>
+        }
+
+      </ion-select>
     </ion-item>
 
     <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="taskForm.invalid">

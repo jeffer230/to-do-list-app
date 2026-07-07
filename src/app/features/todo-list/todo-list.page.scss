@@ -1,0 +1,5 @@
+// El viewport del CDK requiere una altura explícita para calcular el buffer de renderizado de los elementos.
+.virtual-scroll-container {
+  height: 100%;
+  width: 100%;
+}

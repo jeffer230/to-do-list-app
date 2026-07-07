@@ -4,3 +4,8 @@
   opacity: 0.7;
   transition: all 0.3s ease; /* Transición suave al marcar/desmarcar */
 }
+
+.ion-badge {
+  margin-top: 4px; // Ajusta el margen superior para separar del contenido anterior
+  margin-bottom: 4px; // Ajusta el margen inferior para separar del contenido anterior
+}

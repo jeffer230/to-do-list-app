@@ -5,9 +5,18 @@
 
     <ion-label>
       <h2 [class.completed-text]="task.isCompleted">{{ task.title }}</h2>
+
       @if (task.description) {
         <p>{{ task.description }}</p>
       }
+
+      <!-- Mostramos la etiqueta de la categoría con su respectivo color -->
+      @if (task.category) {
+        <ion-badge [style.--background]="task.category.color">
+          {{ task.category.name }}
+        </ion-badge>
+      }
+
     </ion-label>
   </ion-item>
 

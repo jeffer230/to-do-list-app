@@ -17,15 +17,15 @@
 <ion-content [fullscreen]="true">
 
   <!-- Evaluamos el observable UNA sola vez y lo guardamos en la variable local 'taskList' -->
-  @if (tasks$ | async; as taskList) {
+  @if (vm$ | async; as vm) {
 
     <!-- Si la lista tiene elementos, mostramos el Virtual Scroll -->
-    @if (taskList.length > 0) {
+    @if (vm.tasks.length > 0) {
 
       <!-- Su tamaño define cuántos items se renderizan -->
-      <cdk-virtual-scroll-viewport itemSize="72" minBufferPx="900" maxBufferPx="1350" style="height: 100%;">
+      <cdk-virtual-scroll-viewport class="virtual-scroll-container" itemSize="72" minBufferPx="900" maxBufferPx="1350">
         <app-task-item
-          *cdkVirtualFor="let task of taskList"
+          *cdkVirtualFor="let task of vm.tasks"
           [task]="task"
           (toggleComplete)="toggleComplete($event)"
           (deleteTask)="deleteTask($event)">
