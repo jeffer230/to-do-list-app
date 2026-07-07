@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>todo-list</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Su tamaño define cuántos items se renderizan -->
+  <cdk-virtual-scroll-viewport itemSize="72" minBufferPx="900" maxBufferPx="1350" style="height: 100%;">
+
+    <app-task-item
+      *cdkVirtualFor="let task of tasks$ | async"
+      [task]="task"
+      (toggleComplete)="toggleComplete($event)"
+      (deleteTask)="deleteTask($event)">
+    </app-task-item>
+
+  </cdk-virtual-scroll-viewport>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openTaskForm()">
+      <span style="font-size: 24px;">+</span>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

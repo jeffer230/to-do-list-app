@@ -1,0 +1,6 @@
+.completed-text {
+  text-decoration: line-through;
+  color: var(--ion-color-medium); /* Usa el color gris nativo de Ionic */
+  opacity: 0.7;
+  transition: all 0.3s ease; /* Transición suave al marcar/desmarcar */
+}

@@ -16,23 +16,37 @@ export class TaskService {
   public tasks$: Observable<Task[]> = this.tasksSubject.asObservable();
 
   constructor(private storageService: StorageService) {
-    this.loadInitialData();
+    // Cargamos las tareas desde la base de datos local al iniciar el servicio
+    this.loadTasks();
   }
 
   // Cargar datos iniciales
-  private async loadInitialData() {
-    const storedTasks = await this.storageService.get(this.TASKS_KEY);
-    if (storedTasks) {
-      this.tasksSubject.next(storedTasks);
+  private async loadTasks() {
+    const tasks = await this.storageService.get(this.TASKS_KEY);
+    if (tasks) {
+      this.tasksSubject.next(tasks);
     }
   }
 
   // Agregar Tarea
-  public async addTask(newTask: Task): Promise<void> {
-    const currentTasks = this.tasksSubject.getValue();
-    // Agregamos al inicio para que la más nueva salga arriba
-    const updatedTasks = [newTask, ...currentTasks];
+  public async addTask(newTask: Partial<Task>): Promise<void> {
+    // Generamos los datos automáticos que no vienen del formulario
+    const taskData: Task = {
+      id: crypto.randomUUID(), // ID único nativo del navegador
+      title: newTask.title!,
+      description: newTask.description || '',
+      isCompleted: false,
+      categoryId: newTask.categoryId || null,
+      createdAt: Date.now()
+    };
 
+    // Obtenemos el estado actual de las tareas
+    const currentTasks = this.tasksSubject.getValue();
+
+    // Agregamos al inicio para que la más nueva salga arriba
+    const updatedTasks = [taskData, ...currentTasks];
+
+    // Actualizamos el estado y la base de datos
     this.updateStateAndStorage(updatedTasks);
   }
 
@@ -50,11 +64,11 @@ export class TaskService {
   public async deleteTask(taskId: string): Promise<void> {
     const currentTasks = this.tasksSubject.getValue();
     const updatedTasks = currentTasks.filter(task => task.id !== taskId);
-
+    // Actualizamos el estado y la base de datos
     this.updateStateAndStorage(updatedTasks);
   }
 
-  // Método auxiliar para no repetir código
+  // Método privado para actualizar el estado y la base de datos
   private updateStateAndStorage(tasks: Task[]): void {
     this.tasksSubject.next(tasks); // Actualiza la UI instantáneamente
     this.storageService.set(this.TASKS_KEY, tasks); // Guarda en background

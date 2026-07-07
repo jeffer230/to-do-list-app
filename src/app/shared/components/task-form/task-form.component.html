@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nueva Tarea</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Conectamos el formulario reactivo -->
+  <form [formGroup]="taskForm" (ngSubmit)="submit()">
+
+    <ion-item>
+      <ion-input
+        label="Título de la tarea"
+        labelPlacement="floating"
+        formControlName="title"
+        type="text"
+        placeholder="Ej: Revisar despliegue en AWS">
+      </ion-input>
+    </ion-item>
+
+    <!-- Mensaje de error visual -->
+    @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
+      <div class="error-message">
+        <small style="color: var(--ion-color-danger); padding-left: 16px;">
+          El título es obligatorio (mínimo 3 letras).
+        </small>
+      </div>
+    }
+
+    <ion-item class="ion-margin-top">
+      <ion-textarea
+        label="Descripción (Opcional)"
+        labelPlacement="floating"
+        formControlName="description"
+        placeholder="Detalles adicionales...">
+      </ion-textarea>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="taskForm.invalid">
+      Guardar Tarea
+    </ion-button>
+
+  </form>
+</ion-content>
