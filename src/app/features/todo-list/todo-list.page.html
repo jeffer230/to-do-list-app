@@ -19,6 +19,16 @@
   <!-- Evaluamos el observable una sola vez -->
   @if (vm$ | async; as vm) {
 
+    <!-- Pull-to-Refresh -->
+    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+      <ion-refresher-content
+        pullingIcon="arrow-down-outline"
+        pullingText="Desliza para actualizar"
+        refreshingSpinner="circles"
+        refreshingText="Actualizando...">
+      </ion-refresher-content>
+    </ion-refresher>
+
     <!-- Buscador de texto -->
     <ion-searchbar
       mode="ios"

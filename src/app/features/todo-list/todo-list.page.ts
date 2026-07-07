@@ -11,6 +11,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel,
   IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonText,  ModalController,
   IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSearchbar,
+  IonRefresher, IonRefresherContent
 } from '@ionic/angular/standalone';
 import { TaskFormComponent } from 'src/app/shared/components/task-form/task-form.component';
 import { TaskItemComponent } from 'src/app/shared/components/task-item/task-item.component';
@@ -49,6 +50,8 @@ import { CategoryService } from 'src/app/core/services/category.service';
     RouterLink,
     AsyncPipe,
     IonSearchbar,
+    IonRefresher,
+    IonRefresherContent,
   ]
 })
 export class TodoListPage implements OnInit {
@@ -184,6 +187,13 @@ export class TodoListPage implements OnInit {
     return task.id;
   }
 
-
+  handleRefresh(event: any) {
+    // simulamos una petición de red de 1.5 segundos
+    // para que el usuario vea la animación nativa del spinner girando.
+    setTimeout(() => {
+      // llamar a complete() para que el spinner desaparezca
+      event.target.complete();
+    }, 1500);
+  }
 
 }

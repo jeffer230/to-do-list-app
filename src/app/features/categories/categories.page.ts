@@ -52,8 +52,8 @@ export class CategoriesPage implements OnInit {
   async openCategoryForm() {
     const modal = await this.modalCtrl.create({
       component: CategoryFormComponent,
-      breakpoints: [0, 0.4, 0.7],
-      initialBreakpoint: 0.4
+      breakpoints: [0, 0.5, 0.8, 0.9],
+      initialBreakpoint: 0.8
     });
 
     await modal.present();
