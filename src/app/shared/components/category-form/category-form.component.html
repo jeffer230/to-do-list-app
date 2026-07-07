@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nueva Categoría</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="categoryForm" (ngSubmit)="submit()">
+
+    <ion-item>
+      <ion-input
+        label="Nombre de la categoría"
+        labelPlacement="floating"
+        formControlName="name"
+        type="text"
+        placeholder="Ej: Trabajo, Personal, Urgente">
+      </ion-input>
+    </ion-item>
+
+    @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+      <div class="error-message">
+        <small style="color: var(--ion-color-danger); padding-left: 16px;">
+          El nombre es obligatorio.
+        </small>
+      </div>
+    }
+
+    <ion-item class="ion-margin-top">
+      <ion-input
+        label="Color"
+        labelPlacement="start"
+        formControlName="color"
+        type="color">
+      </ion-input>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="categoryForm.invalid">
+      Guardar Categoría
+    </ion-button>
+
+  </form>
+</ion-content>

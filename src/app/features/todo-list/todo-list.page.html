@@ -1,26 +1,59 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>todo-list</ion-title>
+    <ion-title>Mis Tareas</ion-title>
+
+    <!-- Botón condicional gobernado por la nube -->
+    <ion-buttons slot="end">
+      @if (enableCategories$ | async) {
+        <ion-button color="primary" routerLink="/categories">
+          Categorías
+        </ion-button>
+      }
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
 
-  <!-- Su tamaño define cuántos items se renderizan -->
-  <cdk-virtual-scroll-viewport itemSize="72" minBufferPx="900" maxBufferPx="1350" style="height: 100%;">
+  <!-- Evaluamos el observable UNA sola vez y lo guardamos en la variable local 'taskList' -->
+  @if (tasks$ | async; as taskList) {
 
-    <app-task-item
-      *cdkVirtualFor="let task of tasks$ | async"
-      [task]="task"
-      (toggleComplete)="toggleComplete($event)"
-      (deleteTask)="deleteTask($event)">
-    </app-task-item>
+    <!-- Si la lista tiene elementos, mostramos el Virtual Scroll -->
+    @if (taskList.length > 0) {
 
-  </cdk-virtual-scroll-viewport>
+      <!-- Su tamaño define cuántos items se renderizan -->
+      <cdk-virtual-scroll-viewport itemSize="72" minBufferPx="900" maxBufferPx="1350" style="height: 100%;">
+        <app-task-item
+          *cdkVirtualFor="let task of taskList"
+          [task]="task"
+          (toggleComplete)="toggleComplete($event)"
+          (deleteTask)="deleteTask($event)">
+        </app-task-item>
+      </cdk-virtual-scroll-viewport>
 
+    } @else {
+
+      <!-- Si la longitud es 0, mostramos el estado vacío -->
+      <div class="ion-padding ion-text-center ion-margin-top">
+        <p>
+          <ion-text color="medium">No tienes tareas.</ion-text>
+        </p>
+        <p>
+          <ion-text color="medium" class="ion-padding-end">Toca el botón</ion-text>
+           <ion-icon name="add-circle-outline" size="small" color="primary"></ion-icon>
+           <ion-text color="medium" class="ion-padding-start">para crear una.</ion-text>
+        </p>
+      </div>
+
+    }
+
+  }
+
+  <!-- El botón FAB queda por fuera para que siempre esté visible -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="openTaskForm()">
-      <span style="font-size: 24px;">+</span>
+      <ion-icon name="add-outline" size="large"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 

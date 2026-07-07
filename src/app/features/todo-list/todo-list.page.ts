@@ -2,10 +2,15 @@ import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonFab, IonFabButton, ModalController } from '@ionic/angular/standalone';
-import { TaskService } from 'src/app/core/services/task.service';
+import { RouterLink } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { addOutline, addCircleOutline, checkboxOutline } from 'ionicons/icons';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonFab, IonIcon, IonFabButton, ModalController, IonButtons, IonButton, IonText } from '@ionic/angular/standalone';
 import { TaskFormComponent } from 'src/app/shared/components/task-form/task-form.component';
 import { TaskItemComponent } from 'src/app/shared/components/task-item/task-item.component';
+import { TaskService } from 'src/app/core/services/task.service';
+import { RemoteConfigService } from 'src/app/core/services/remote-config.service';
+
 
 @Component({
   selector: 'app-todo-list',
@@ -13,26 +18,36 @@ import { TaskItemComponent } from 'src/app/shared/components/task-item/task-item
   styleUrls: ['./todo-list.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
+  imports: [IonText,
+    IonButton,
+    IonButtons,
     IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
     IonFab,
     IonFabButton,
+    IonIcon,
     CommonModule,
     FormsModule,
     ScrollingModule,
     TaskItemComponent,
+    RouterLink,
   ]
 })
 export class TodoListPage implements OnInit {
   private modalCtrl = inject(ModalController);
   private taskService = inject(TaskService);
+  private remoteConfigService = inject(RemoteConfigService);
 
   tasks$ = this.taskService.tasks$;
 
-  constructor() { }
+  // Observable directo para leer el flag en el HTML
+  enableCategories$ = this.remoteConfigService.enableCategories$;
+
+  constructor() {
+    addIcons({ addOutline, addCircleOutline, checkboxOutline });
+   }
 
   ngOnInit() {
   }

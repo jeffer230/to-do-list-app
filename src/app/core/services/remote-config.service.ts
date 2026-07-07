@@ -21,7 +21,7 @@ export class RemoteConfigService {
       const app = initializeApp(environment.firebase);
       const remoteConfig = getRemoteConfig(app);
 
-      // Valores por defecto Offline o antes del primer fetch
+      // Valores por defecto si no hay internet o falla la carga
       remoteConfig.defaultConfig = {
         'enable_categories': false
       };

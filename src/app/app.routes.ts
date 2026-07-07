@@ -9,7 +9,12 @@ export const routes: Routes = [
 
   {
     path: 'todo-list',
-    loadComponent: () => import('./features/todo-list/todo-list.page').then( m => m.TodoListPage)
+    loadComponent: () => import('src/app/features/todo-list/todo-list.page').then( m => m.TodoListPage)
+  },
+
+  {
+    path: 'categories',
+    loadComponent: () => import('src/app/features/categories/categories.page').then( m => m.CategoriesPage)
   },
 
 ];

@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!-- Botón nativo de retroceso (Back) -->
+    <ion-buttons slot="start" >
+      <ion-back-button defaultHref="/todo-list" text="Volver"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Categorías</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+
+    <!-- El nuevo bloque for de Angular con trackeo de ID por rendimiento -->
+    @for (category of categories$ | async; track category.id) {
+
+      <ion-item-sliding #slidingItem>
+        <ion-item>
+          <ion-label>
+            <h2>{{ category.name }}</h2>
+          </ion-label>
+          <!-- Circulo indicador de color -->
+          <div slot="end" [style.backgroundColor]="category.color"
+               style="width: 16px; height: 16px; border-radius: 50%;">
+          </div>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="deleteCategory(category.id, slidingItem)">
+            Eliminar
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+
+    } @empty {
+
+      <!-- Se muestra automáticamente si el arreglo está vacío -->
+      <div class="ion-padding ion-text-center ion-margin-top">
+        <p>
+          <ion-text color="medium">No tienes categorías.</ion-text>
+        </p>
+        <p>
+          <ion-text color="medium" class="ion-padding-end">Toca el botón</ion-text>
+           <ion-icon name="add-circle-outline" size="small" color="primary"></ion-icon>
+           <ion-text color="medium" class="ion-padding-start">para crear una.</ion-text>
+        </p>
+      </div>
+
+    }
+
+  </ion-list>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCategoryForm()">
+      <ion-icon name="add-outline" size="large"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
