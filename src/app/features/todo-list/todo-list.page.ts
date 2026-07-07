@@ -3,10 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { RouterLink } from '@angular/router';
-import { combineLatest, map } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { addOutline, addCircleOutline, checkboxOutline } from 'ionicons/icons';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonFab, IonIcon, IonFabButton, ModalController, IonButtons, IonButton, IonText } from '@ionic/angular/standalone';
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel,
+  IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonText,  ModalController,
+  IonSegment, IonSegmentButton, IonSelect, IonSelectOption
+} from '@ionic/angular/standalone';
 import { TaskFormComponent } from 'src/app/shared/components/task-form/task-form.component';
 import { TaskItemComponent } from 'src/app/shared/components/task-item/task-item.component';
 import { TaskService } from 'src/app/core/services/task.service';
@@ -20,21 +25,29 @@ import { CategoryService } from 'src/app/core/services/category.service';
   styleUrls: ['./todo-list.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonText,
-    IonButton,
-    IonButtons,
+  imports: [
     IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
     IonFab,
     IonFabButton,
+    IonItem,
+    IonLabel,
+    IonText,
+    IonButton,
+    IonButtons,
     IonIcon,
+    IonSegment,
+    IonSegmentButton,
+    IonSelect,
+    IonSelectOption,
     CommonModule,
     FormsModule,
     ScrollingModule,
     TaskItemComponent,
     RouterLink,
+    AsyncPipe,
   ]
 })
 export class TodoListPage implements OnInit {
@@ -48,36 +61,76 @@ export class TodoListPage implements OnInit {
   // Observable directo para leer el flag en el HTML
   enableCategories$ = this.remoteConfigService.enableCategories$;
 
+  // Estado reactivo de filtros
+  filterSubject = new BehaviorSubject<{ status: 'all' | 'pending' | 'completed', categoryId: string | null }>({
+    status: 'all',
+    categoryId: null
+  });
+
   // Combinamos ambos flujos de datos
   vm$ = combineLatest({
     tasks: this.taskService.tasks$,
-    categories: this.categoryService.categories$
+    categories: this.categoryService.categories$,
+    filters: this.filterSubject,
+    enableCategories: this.enableCategories$
   }).pipe(
-    map(({ tasks, categories }) => {
+    map(({ tasks, categories, filters, enableCategories }) => {
+
+      // Aplicamos filtro de estado
+      let filteredTasks = tasks;
+      if (filters.status === 'pending') {
+        filteredTasks = filteredTasks.filter(t => !t.isCompleted);
+      } else if (filters.status === 'completed') {
+        filteredTasks = filteredTasks.filter(t => t.isCompleted);
+      }
+
+      // Aplicamos filtro de categoría condicional utilizando Remote Config firebase
+      if (enableCategories && filters.categoryId !== null) {
+        filteredTasks = filteredTasks.filter(t => t.categoryId === filters.categoryId);
+      }
+
       // Por cada tarea, buscamos si tiene una categoría asignada y se la adjuntamos
-      const enrichedTasks = tasks.map(task => ({
+      const enrichedTasks = filteredTasks.map(task => ({
         ...task,
         category: categories.find(c => c.id === task.categoryId)
       }));
 
-      // Retornamos un objeto con la propiedad 'tasks'
-      return { tasks: enrichedTasks };
+      // Retornamos las tareas ya filtradas y las categorías
+      return {
+        tasks: enrichedTasks,
+        categories: categories
+      };
+
     })
   );
 
   constructor() {
+    // Registro de iconos
     addIcons({ addOutline, addCircleOutline, checkboxOutline });
-   }
+  }
 
   ngOnInit() {
   }
 
+  // Actualizamos los filtros reactivos según la interacción del usuario
+  updateStatusFilter(event: any) {
+    const currentFilters = this.filterSubject.getValue();
+    this.filterSubject.next({ ...currentFilters, status: event.detail.value });
+  }
+
+  // Actualizamos el filtro de categoría según la selección del usuario
+  updateCategoryFilter(event: any) {
+    const currentFilters = this.filterSubject.getValue();
+    this.filterSubject.next({ ...currentFilters, categoryId: event.detail.value });
+  }
+
+  // Abrir el modal para crear una nueva tarea
   async openTaskForm() {
     const modal = await this.modalCtrl.create({
       component: TaskFormComponent,
       // Hace que el modal sea deslizable tipo "bottom sheet"
       breakpoints: [0, 0.5, 0.8, 0.9],
-      // iniciará ocupando el 80% de la pantalla
+      // inicia ocupando el 80% de la pantalla
       initialBreakpoint: 0.8
     });
 
@@ -103,6 +156,11 @@ export class TodoListPage implements OnInit {
   // Eliminar la tarea
   async deleteTask(taskId: string) {
     await this.taskService.deleteTask(taskId);
+  }
+
+  // Función para que el Virtual Scroll identifique cada elemento de forma única
+  trackById(index: number, task: any): string {
+    return task.id;
   }
 
 }

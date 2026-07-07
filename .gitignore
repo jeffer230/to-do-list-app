@@ -70,4 +70,4 @@ testem.log
 Thumbs.db
 
 # Ambientes
-src/environments/environment.ts
+/src/environments/environment.ts

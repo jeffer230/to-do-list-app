@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Mis Tareas</ion-title>
 
-    <!-- Botón condicional gobernado por la nube -->
+    <!-- Botón condicional utilizando Remote Config firebase -->
     <ion-buttons slot="end">
       @if (enableCategories$ | async) {
         <ion-button color="primary" routerLink="/categories">
@@ -16,33 +16,83 @@
 
 <ion-content [fullscreen]="true">
 
-  <!-- Evaluamos el observable UNA sola vez y lo guardamos en la variable local 'taskList' -->
+  <!-- Evaluamos el observable una sola vez -->
   @if (vm$ | async; as vm) {
+
+    <!-- Filtro de estado -->
+    <div class="ion-padding-horizontal ion-padding-top">
+      <ion-segment value="all" mode="ios" (ionChange)="updateStatusFilter($event)">
+        <ion-segment-button value="all">
+          <ion-label>Todas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="pending">
+          <ion-label>Pendientes</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="completed">
+          <ion-label>Completas</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Filtro de categoria condicional utilizando Remote Config firebase -->
+    @if (enableCategories$ | async) {
+      <div class="ion-padding-horizontal">
+        <ion-item lines="none" class="ion-margin-top">
+          <ion-select
+            label="Filtrar por categoría"
+            interface="popover"
+            [value]="null"
+            (ionChange)="updateCategoryFilter($event)">
+
+            <ion-select-option [value]="null">
+              Todas las categorías
+            </ion-select-option>
+
+            @for (cat of vm.categories; track cat.id) {
+              <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
+            }
+
+          </ion-select>
+        </ion-item>
+      </div>
+    }
 
     <!-- Si la lista tiene elementos, mostramos el Virtual Scroll -->
     @if (vm.tasks.length > 0) {
 
-      <!-- Su tamaño define cuántos items se renderizan -->
-      <cdk-virtual-scroll-viewport class="virtual-scroll-container" itemSize="72" minBufferPx="900" maxBufferPx="1350">
-        <app-task-item
-          *cdkVirtualFor="let task of vm.tasks"
-          [task]="task"
-          (toggleComplete)="toggleComplete($event)"
-          (deleteTask)="deleteTask($event)">
-        </app-task-item>
-      </cdk-virtual-scroll-viewport>
-
+      <div style="height: calc(100% - 130px);">
+        <!-- Su tamaño define cuántos items se renderizan -->
+        <cdk-virtual-scroll-viewport
+          class="virtual-scroll-container"
+          itemSize="72"
+          minBufferPx="900"
+          maxBufferPx="1350"
+        >
+          <app-task-item
+            *cdkVirtualFor="let task of vm.tasks; trackBy: trackById"
+            [task]="task"
+            (toggleComplete)="toggleComplete($event)"
+            (deleteTask)="deleteTask($event)">
+          </app-task-item>
+        </cdk-virtual-scroll-viewport>
+      </div>
     } @else {
 
       <!-- Si la longitud es 0, mostramos el estado vacío -->
       <div class="ion-padding ion-text-center ion-margin-top">
         <p>
-          <ion-text color="medium">No tienes tareas.</ion-text>
+          <ion-text color="medium">
+            No tienes tareas.
+          </ion-text>
         </p>
         <p>
-          <ion-text color="medium" class="ion-padding-end">Toca el botón</ion-text>
-           <ion-icon name="add-circle-outline" size="small" color="primary"></ion-icon>
-           <ion-text color="medium" class="ion-padding-start">para crear una.</ion-text>
+          <ion-text color="medium" class="ion-padding-end">
+            Toca el botón
+          </ion-text>
+          <ion-icon name="add-circle-outline" size="small" color="primary"></ion-icon>
+          <ion-text color="medium" class="ion-padding-start">
+            para crear una.
+          </ion-text>
         </p>
       </div>
 
