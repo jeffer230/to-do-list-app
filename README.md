@@ -1,6 +1,6 @@
 # To-Do List App - Ionic & Angular
 
-Aplicación móvil híbrida de gestión de tareas desarrollada con **Ionic** y **Angular**, diseñada con un enfoque estricto en rendimiento, escalabilidad, integraciones en la nube y buenas prácticas de ingeniería de software. 
+Aplicación móvil híbrida de gestión de tareas desarrollada con **Ionic** y **Angular**. El proyecto se desarrolló con un enfoque estricto en rendimiento, escalabilidad, integraciones en la nube y buenas prácticas de ingeniería de software. 
 
 Este proyecto muestra la implementación de arquitecturas modernas para el desarrollo móvil, priorizando la fluidez de la interfaz y el manejo de estado reactivo.
 
@@ -36,12 +36,12 @@ El código base ha sido estructurado siguiendo principios **SOLID** y lineamient
 
 ### 1. Gestión de Estado Reactiva (RxJS)
 En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliza un flujo de datos unidireccional puramente reactivo.
-* Se implementaron `BehaviorSubject` como única fuente de la verdad (Single Source of Truth) en los servicios.
+* Se utilizaron `BehaviorSubject` en los servicios para asegurar que los datos vivan en un solo lugar, estado Centralizado (Single Source of Truth). Gracias a esto, si una tarea se modifica, se elimina o cambia de categoría, la interfaz gráfica (UI) "escucha" ese cambio y se actualiza automáticamente, sin necesidad de recargar pantallas ni sincronizar datos manualmente.
 * Se utilizó el operador `combineLatest` para cruzar entidades en memoria (Tareas + Categorías + Filtros) y generar un *ViewModel* unificado, evitando consultas N+1 y manteniendo la UI perfectamente sincronizada en tiempo real.
 
 ### 2. Optimización de Rendimiento
-* **ChangeDetectionStrategy.OnPush:** Implementado globalmente en vistas y componentes pesados (formularios, modales) para aislar el árbol de componentes y evitar evaluaciones innecesarias de *Zone.js*.
-* **Angular CDK Virtual Scroll:** Renderizado inteligente de listas. En lugar de saturar el DOM con miles de nodos HTML, se reciclan los elementos en pantalla, garantizando 60 FPS estables sin importar el tamaño de la lista de tareas.
+* **Detección de Cambios Optimizada (OnPush):** Se aplicó ChangeDetectionStrategy.OnPush en vistas y componentes para tomar el control de cómo Angular actualiza la pantalla. En lugar de que el framework revise toda la aplicación con cada clic o interacción del usuario (el comportamiento costoso por defecto de Zone.js), los componentes se aíslan y solo se redibujan cuando reciben datos nuevos. Esto libera el procesador del celular, ahorra batería y elimina por completo los micro-retrasos en la interfaz.
+* **Angular CDK Virtual Scroll:** Renderizado inteligente de listas. En lugar de crear miles de elementos en la pantalla (lo que congelaría el celular y drenaría la batería), la aplicación solo dibuja las tareas que el usuario está viendo en ese momento. Al hacer scroll, las tarjetas ocultas se reciclan dinámicamente, asegurando una navegación ultra fluida y un consumo de memoria mínimo sin importar el tamaño de la lista de tareas.
 * **Control Flow (@if, @for, @empty):** Uso del nuevo motor de plantillas de Angular para reducir el peso del bundle y simplificar la lógica de vistas (Empty States nativos).
 * **TrackBy nativo:** Rastreo eficiente de IDs en listas para evitar el redibujado destructivo del DOM durante las actualizaciones de estado.
 
@@ -99,7 +99,7 @@ Antes de comenzar, asegúrate de tener instalado el entorno básico en tu máqui
 ### Para Despliegue en Android
 * **Java Development Kit (JDK):** Versión 21 (requerida por las versiones modernas de Gradle en Android).
 * **Android Studio Incluyendo:**
-  * Android SDK (API 34 o superior recomendada).
+  * Android SDK (API 35 o superior recomendada).
   * Android SDK Platform-Tools.
 * Un emulador configurado (AVD) o un dispositivo físico con Depuración USB activada.
 
