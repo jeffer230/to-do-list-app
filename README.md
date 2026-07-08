@@ -30,7 +30,6 @@ Este proyecto muestra la implementación de arquitecturas modernas para el desar
 
 ---
 
-
 ## Arquitectura y Decisiones Técnicas
 
 El código base ha sido estructurado siguiendo principios **SOLID** y lineamientos de **Clean Code**, separando claramente las responsabilidades entre la capa de presentación (UI) y la lógica de negocio (Servicios).
@@ -55,9 +54,15 @@ En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliz
 
 ## Instalación y Ejecución
 
-### Prerrequisitos
-* [Node.js](https://nodejs.org/) (Versión LTS recomendada)
-* [Ionic CLI](https://ionicframework.com/docs/cli) (`npm install -g @ionic/cli`)
+### Prerrequisitos del Sistema
+Antes de comenzar, asegúrate de tener instalado el entorno básico en tu máquina según las plataformas en las que vayas a desplegar:
+
+* **Node.js:** Versión v18.x o v20.x (https://nodejs.org/) (Versión LTS recomendada)
+* **Gestor de paquetes:** `npm` (incluido con Node) o `yarn`.
+* **Ionic CLI:** (https://ionicframework.com/docs/cli) Instalado de forma global para gestionar el ciclo de vida de la app:
+```bash
+  npm install -g @ionic/cli
+```
 * Android Studio (Para Android) / Xcode y macOS (Para iOS).
 
 ### Despliegue Local (Entorno Web)
@@ -68,10 +73,12 @@ En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliz
 ```
 
 3. Configurar variables de entorno (Firebase):
-- En el archivo `src/environments/environment.ts` y el archivo `src/environments/environment.prod.ts` del proyecto:
+- Crea/Edita los archivos `src/environments/environment.ts` y `src/environments/environment.prod.ts` copiando la estructura de `src/environments/environment.example.ts` y reemplazando la información por las credenciales correspondientes de Firebase:
 
 ```typescript
 
+  export const environment = {
+    production: false,
     firebaseConfig: {
       apiKey: "TU_API_KEY",
       authDomain: "TU_AUTH_DOMAIN",
@@ -80,9 +87,9 @@ En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliz
       messagingSenderId: "TU_MESSAGING_SENDER_ID",
       appId: "TU_APP_ID"
     }
+  };
 
 ```
-- reemplaza la informacion por las correspondientes credenciales de Firebase.
 
 4. Ejecutar el servidor de desarrollo:
 ```bash
@@ -90,6 +97,22 @@ En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliz
 ```
 - La aplicación se abrirá automáticamente en tu navegador en http://localhost:8100
 
+### Para Despliegue en Android
+* **Java Development Kit (JDK):** Versión 21 (requerida por las versiones modernas de Gradle en Android).
+* **Android Studio Incluyendo:**
+  * Android SDK (API 34 o superior recomendada).
+  * Android SDK Platform-Tools.
+* Un emulador configurado (AVD) o un dispositivo físico con Depuración USB activada.
+
+### Para Despliegue en iOS (Requiere macOS)
+* **Xcode:** Versión estable más reciente desde la Mac App Store.
+* **Xcode Command Line Tools:** Instaladas ejecutando xcode-select --install en la terminal.
+* **CocoaPods:** Necesario para gestionar las dependencias nativas de iOS (plugins de Capacitor):
+```bash
+sudo gem install cocoapods
+```
+
+---
 
 ### Compilación y Ejecución en Android
 - Para generar la versión nativa utilizando Capacitor, ejecuta los siguientes comandos en tu terminal:
