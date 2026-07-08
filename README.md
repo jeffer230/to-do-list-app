@@ -79,7 +79,7 @@ Antes de comenzar, asegúrate de tener instalado el entorno básico en tu máqui
 
   export const environment = {
     production: false,
-    firebaseConfig: {
+    firebase: {
       apiKey: "TU_API_KEY",
       authDomain: "TU_AUTH_DOMAIN",
       projectId: "TU_PROJECT_ID",
