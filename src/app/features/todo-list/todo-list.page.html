@@ -1,7 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Mis Tareas</ion-title>
-
     <!-- Botón condicional utilizando Remote Config firebase -->
     <ion-buttons slot="end">
       @if (enableCategories$ | async) {
@@ -10,11 +9,67 @@
         </ion-button>
       }
     </ion-buttons>
-
   </ion-toolbar>
+
+  <!-- Buscador de texto -->
+  <ion-toolbar>
+    <ion-searchbar
+      mode="ios"
+      placeholder="Buscar tareas..."
+      [debounce]="300"
+      (ionInput)="updateSearchFilter($event)">
+    </ion-searchbar>
+  </ion-toolbar>
+
+  <!-- Controles de Filtro -->
+  <ion-toolbar>
+    <!-- NUEVO: Contenedor Flex para obligar el apilamiento vertical estricto en iOS -->
+    <div class="filters-wrapper">
+
+      <!-- Segmento filtro de estado -->
+      <div class="ion-padding-horizontal">
+        <ion-segment value="all" mode="ios" (ionChange)="updateStatusFilter($event)">
+          <ion-segment-button value="all">
+            <ion-label>Todas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="pending">
+            <ion-label>Pendientes</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="completed">
+            <ion-label>Completas</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+
+      <!-- Filtro de categoria condicional utilizando Remote Config firebase -->
+      @if (enableCategories$ | async) {
+        <div class="ion-padding-horizontal">
+          <ion-item lines="none" class="category-select-item">
+            <ion-select
+              label="Filtrar por categoría"
+              interface="popover"
+              [value]="null"
+              (ionChange)="updateCategoryFilter($event)">
+
+              <ion-select-option [value]="null">
+                Todas las categorías
+              </ion-select-option>
+
+              <!-- Leemos las categorías directamente del observable -->
+              @for (cat of categories$ | async; track cat.id) {
+                <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
+              }
+
+            </ion-select>
+          </ion-item>
+        </div>
+      }
+    </div>
+  </ion-toolbar>
+
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
 
   <!-- Evaluamos el observable una sola vez -->
   @if (vm$ | async; as vm) {
@@ -29,56 +84,10 @@
       </ion-refresher-content>
     </ion-refresher>
 
-    <!-- Buscador de texto -->
-    <ion-searchbar
-      mode="ios"
-      placeholder="Buscar tareas..."
-      [debounce]="300"
-      (ionInput)="updateSearchFilter($event)">
-    </ion-searchbar>
-
-    <!-- Filtro de estado -->
-    <div class="ion-padding-horizontal">
-      <ion-segment value="all" mode="ios" (ionChange)="updateStatusFilter($event)">
-        <ion-segment-button value="all">
-          <ion-label>Todas</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="pending">
-          <ion-label>Pendientes</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="completed">
-          <ion-label>Completas</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </div>
-
-    <!-- Filtro de categoria condicional utilizando Remote Config firebase -->
-    @if (enableCategories$ | async) {
-      <div class="ion-padding-horizontal">
-        <ion-item lines="none" class="ion-margin-top">
-          <ion-select
-            label="Filtrar por categoría"
-            interface="popover"
-            [value]="null"
-            (ionChange)="updateCategoryFilter($event)">
-
-            <ion-select-option [value]="null">
-              Todas las categorías
-            </ion-select-option>
-
-            @for (cat of vm.categories; track cat.id) {
-              <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
-            }
-
-          </ion-select>
-        </ion-item>
-      </div>
-    }
-
     <!-- Si la lista tiene elementos, mostramos el Virtual Scroll -->
     @if (vm.tasks.length > 0) {
 
-      <div style="height: calc(100% - 130px);">
+      <div class="scroll-wrapper">
         <!-- Su tamaño define cuántos items se renderizan -->
         <cdk-virtual-scroll-viewport
           class="virtual-scroll-container"
@@ -96,7 +105,7 @@
       </div>
     } @else {
 
-      <!-- Si la longitud es 0, mostramos el estado vacío -->
+      <!-- Empty State Si la longitud es 0, mostramos el estado vacío -->
       <div class="ion-padding ion-text-center ion-margin-top">
         <p>
           <ion-text color="medium">
@@ -118,7 +127,7 @@
 
   }
 
-  <!-- El botón FAB queda por fuera para que siempre esté visible -->
+  <!-- El botón FAB queda fijo sobre la lista siempre visible -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="openTaskForm()">
       <ion-icon name="add-outline" size="large"></ion-icon>

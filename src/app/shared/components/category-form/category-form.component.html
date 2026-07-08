@@ -1,9 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Nueva Categoría</ion-title>
+    <!-- Título dinámico -->
+    <ion-title>
+      @if (categoryToEdit) {
+        Editar Categoría
+      }  @else {
+        Nueva Categoría
+      }
+    </ion-title>
+
     <ion-buttons slot="end">
       <ion-button (click)="cancel()">Cancelar</ion-button>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
@@ -37,8 +46,13 @@
       </ion-input>
     </ion-item>
 
+    <!-- Botón dinámico -->
     <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="categoryForm.invalid">
-      Guardar Categoría
+      @if (categoryToEdit) {
+        Actualizar  Categoría
+      } @else {
+        Guardar Categoría
+      }
     </ion-button>
 
   </form>

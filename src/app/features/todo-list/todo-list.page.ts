@@ -65,6 +65,9 @@ export class TodoListPage implements OnInit {
   // Observable directo para leer el flag en el HTML
   enableCategories$ = this.remoteConfigService.enableCategories$;
 
+  // Observable directo para el selector del header
+  categories$ = this.categoryService.categories$;
+
   // Estado reactivo de filtros
   filterSubject = new BehaviorSubject<{ status: 'all' | 'pending' | 'completed', categoryId: string | null, searchQuery: string }>({
     status: 'all',

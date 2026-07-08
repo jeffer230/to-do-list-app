@@ -43,12 +43,22 @@ export class CategoryService {
 
     this.updateStateAndStorage(updatedCategories);
 
-    // Nota de Senior: Aquí a futuro podríamos emitir un evento para
-    // quitarle el categoryId a las tareas que tenían esta categoría.
   }
 
   private updateStateAndStorage(categories: Category[]): void {
     this.categoriesSubject.next(categories);
     this.storageService.set(this.CATEGORIES_KEY, categories);
   }
+
+  public async updateCategory(updatedCategory: Category): Promise<void> {
+    const currentCategories = this.categoriesSubject.getValue();
+
+    // Buscamos el índice y reemplazamos el objeto completo manteniendo el orden
+    const index = currentCategories.findIndex(c => c.id === updatedCategory.id);
+    if (index !== -1) {
+      currentCategories[index] = updatedCategory;
+      this.updateStateAndStorage([...currentCategories]);
+    }
+  }
+
 }

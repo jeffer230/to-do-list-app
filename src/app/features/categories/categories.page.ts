@@ -7,6 +7,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addOutline, addCircleOutline } from 'ionicons/icons';
+import { Category } from 'src/app/shared/models/category.model';
 import { CategoryService } from 'src/app/core/services/category.service';
 import { CategoryFormComponent } from 'src/app/shared/components/category-form/category-form.component';
 
@@ -49,9 +50,20 @@ export class CategoriesPage implements OnInit {
 
   ngOnInit() {}
 
-  async openCategoryForm() {
+  // método acepta una categoría y un slidingItem para cerrarlo
+  async openCategoryForm(category?: Category, slidingItem?: any) {
+
+    // Si viene de un swipe, cerramos el item para que no quede abierto visualmente
+    if (slidingItem) {
+      slidingItem.close();
+    }
+
     const modal = await this.modalCtrl.create({
       component: CategoryFormComponent,
+      // le pasamos la data al modal si existe
+      componentProps: {
+        categoryToEdit: category
+      },
       breakpoints: [0, 0.5, 0.8, 0.9],
       initialBreakpoint: 0.8
     });
@@ -60,8 +72,15 @@ export class CategoriesPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm' && data) {
-      await this.categoryService.addCategory(data);
+      // si tiene ID edita.
+      if (data.id) {
+        await this.categoryService.updateCategory(data);
+      } else {
+        // No tiene ID agrega
+        await this.categoryService.addCategory(data);
+      }
     }
+
   }
 
   deleteCategory(categoryId: string, slidingItem: IonItemSliding) {

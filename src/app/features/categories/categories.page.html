@@ -26,6 +26,12 @@
         </ion-item>
 
         <ion-item-options side="end">
+          <!-- Botón de Editar -->
+          <ion-item-option color="primary" (click)="openCategoryForm(category, slidingItem)">
+            Editar
+          </ion-item-option>
+
+          <!-- Botón de eliminar -->
           <ion-item-option color="danger" (click)="deleteCategory(category.id, slidingItem)">
             Eliminar
           </ion-item-option>
