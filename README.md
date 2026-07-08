@@ -48,7 +48,6 @@ En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliz
 ### 3. Feature Toggles (Remote Config)
 * Se integró **Firebase Remote Config** para controlar características de la aplicación en tiempo real sin requerir actualizaciones en las tiendas de aplicaciones (App Store / Google Play). 
 * Específicamente, el módulo completo de "Categorías" funciona bajo una bandera condicional (`enable_categories`), demostrando capacidad para despliegues progresivos (Canary Releases) y pruebas A/B.
-* *Nota de Seguridad:* El archivo `environment.ts` con las credenciales del SDK Web fue excluido del repositorio (`.gitignore`) aplicando prácticas de DevSecOps, aunque las llaves cliente sean públicas por diseño.
 
 ---
 
