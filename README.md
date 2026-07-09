@@ -6,17 +6,18 @@ Este proyecto muestra la implementación de arquitecturas modernas para el desar
 
 ---
 
-## Características Principales
+## Cambios Realizados y Nuevas Funcionalidades
 
-* **CRUD Completo:** Creación, lectura, actualización y eliminación de Tareas y Categorías.
-* **Filtros en Tiempo Real:** Búsqueda por texto (con `debounce` para optimización) y segmentación por estado (Pendientes/Completadas) procesados en memoria.
+Partiendo de una aplicación base de tareas, se desarrollaron las siguientes características:
+* **Módulo de Tareas:** Creación, lectura y eliminación de tareas.
+* **Módulo de Categorías (CRUD):** Creación, lectura, actualización y eliminación de categorías personalizadas con asignación de colores.
+* **Filtros en Tiempo Real:** Búsqueda por texto (con `debounce` para optimización), segmentación por estado (Pendientes/Completadas) y selector por Categoría, todo procesado dinámicamente en memoria.
 * **Persistencia Local:** Almacenamiento asíncrono e integrado usando `@ionic/storage`.
 * **UX Nativa:** 
   * Gestos de deslizamiento (Swipe to delete).
   * Componente `Ion-Refresher` (Pull-to-refresh) preparado para futuras conexiones a backend.
   * Modales tipo *Bottom Sheet* para formularios amigables con el teclado del sistema operativo.
   * *Empty States* diseñados para guiar al usuario.
-
 ---
 
 ## Stack Tecnológico
@@ -49,6 +50,7 @@ En lugar de mutar arreglos y forzar renderizados manuales, la aplicación utiliz
 * Se integró **Firebase Remote Config** para controlar características de la aplicación en tiempo real sin requerir actualizaciones en las tiendas de aplicaciones (App Store / Google Play). 
 * Específicamente, el módulo completo de "Categorías" funciona bajo una bandera condicional (`enable_categories`), demostrando capacidad para despliegues progresivos (Canary Releases) y pruebas A/B.
 
+
 ---
 
 ## Instalación y Ejecución
@@ -65,7 +67,7 @@ Antes de comenzar, asegúrate de tener instalado el entorno básico en tu máqui
 * Android Studio (Para Android) / Xcode y macOS (Para iOS).
 
 ### Despliegue Local (Entorno Web)
-1. Clonar el repositorio en tu eqipo local y ubicate en la raíz del proyecto.
+1. Clonar el repositorio en tu equipo local y ubicate en la raíz del proyecto.
 2. Instalar dependencias del proyecto:
 ```bash
   npm install
@@ -131,10 +133,9 @@ sudo gem install cocoapods
   npx cap open android
 ```
 
-4. Generar el archivo APK:
-- Una vez abierto Android Studio y finalizada la indexación de Gradle, dirígete al menú superior.
-- Selecciona: Build > Build Bundle(s) / APK(s) > Build APK(s).
-- El IDE te notificará cuando el archivo .apk esté listo para instalarse en cualquier emulador o dispositivo físico.
+4. Ejecutar y Generar el APK:
+- **Para ejecutar en Emulador/Dispositivo:** Selecciona tu AVD (Emulador) o dispositivo físico conectado por USB en la barra superior de Android Studio y presiona el botón verde de **Play (Run 'app')**.
+- **Para generar el instalable (.apk):** Dirígete al menú superior y selecciona `Build > Build Bundle(s) / APK(s) > Build APK(s)`. El IDE te notificará cuando el archivo esté listo.
 
 ### Compilación y Ejecución en iOS (Requiere macOS)
 - Para generar la versión nativa de iOS utilizando Capacitor, ejecuta los siguientes comandos desde tu terminal en un entorno macOS:
@@ -160,5 +161,25 @@ sudo gem install cocoapods
 - Marca la casilla Automatically manage signing y selecciona un equipo de desarrollo de Apple (Team) válido.
 
 5. Desplegar o generar el archivo ejecutable (.ipa):
-- Para probar en emulador/dispositivo: Selecciona tu destino en la barra superior y presiona el botón Play (Run) o usa el atajo Cmd + R.
-- Para distribución: Cambia el destino de ejecución a Any iOS Device (arm64) y dirígete al menú superior en Product > Archive para iniciar el proceso de empaquetado del archivo .ipa.
+- **Para probar en emulador/dispositivo:** Selecciona tu destino (Simulador o iPhone físico conectado) en la barra superior y presiona el botón **Play** (Run) o usa el atajo `Cmd + R`.
+- **Para generar el archivo instalable (.ipa):**
+  1. Cambia el destino de ejecución en la barra superior a **Any iOS Device (arm64)**.
+  2. Dirígete al menú superior y selecciona **Product > Archive** para iniciar el proceso de empaquetado.
+  3. Una vez finalizado, se abrirá automáticamente la ventana **Organizer**. Selecciona el archivo recién compilado (el más reciente en la lista) y haz clic en el botón azul **Distribute App** a la derecha.
+  4. Selecciona el método **Custom** y luego elige **Development** (o Ad Hoc, dependiendo de tu perfil de aprovisionamiento).
+  5. Selecciona la opción **Export**. En la pantalla de opciones de exportación (*App Thinning*), asegúrate de cambiar la configuración a **"None"** para generar un binario universal. Esto es una buena práctica que evita errores conocidos de las herramientas de optimización nativas de macOS (`ipatool`). Haz clic en **Next**.
+  6. En la pantalla de firma (*Re-sign*), deja marcada la opción **Automatically manage signing** para que Xcode gestione la firma de código con tu Team de manera automática y haz clic en **Next**.
+  7. En la pantalla de resumen final, presiona **Export** y elige dónde guardar la carpeta en tu equipo. Dentro de esa carpeta encontrarás el archivo final `.ipa`.
+
+---
+
+## Respuestas a las Preguntas de Evaluación
+
+### 1. ¿Cuáles fueron los principales desafíos que enfrentaste al implementar las nuevas funcionalidades?
+El principal desafío técnico fue gestionar el cruce de datos relacionales (Tareas y Categorías) en el Frontend sin impactar el rendimiento. Al usar almacenamiento local y observables, evitar un problema de "consultas N+1" era vital. Lo resolví aplicando reactividad mediante el operador `combineLatest` de RxJS, creando un *ViewModel* que fusiona los flujos de tareas, categorías y los estados de los filtros en memoria. Otro desafío fue evitar conflictos de scroll en iOS entre la vista principal y el buscador, lo cual se resolvió agrupando lógicamente los filtros dentro del `<ion-header>`.
+
+### 2. ¿Qué técnicas de optimización de rendimiento aplicaste y por qué?
+Se aplicaron múltiples capas de optimización: **Angular CDK Virtual Scroll** para el reciclaje inteligente del DOM. En lugar de saturar la memoria del dispositivo renderizando miles de elementos HTML invisibles, la aplicación solo dibuja las tareas que caben en la pantalla. Esto garantiza un desplazamiento (scroll) completamente fluido y sin tirones visuales sin importar el largo de la lista; **ChangeDetectionStrategy.OnPush** para aislar el árbol de componentes y evitar evaluaciones innecesarias de *Zone.js*; y rastreo por IDs (`trackBy`) para evitar el redibujado destructivo de elementos durante la actualización de estados.
+
+### 3. ¿Cómo aseguraste la calidad y mantenibilidad del código?
+Alineando la arquitectura a los principios **SOLID** y **Clean Code**. Se centralizó el estado en los servicios (`BehaviorSubject` como *Single Source of Truth*), se tiparon estrictamente los modelos en TypeScript, y se aplicó el principio DRY reutilizando componentes (como el formulario dinámico para Crear/Editar categorías). Además, se optó por Capacitor sobre Cordova, ya que ofrece una arquitectura moderna que facilita el mantenimiento del código nativo a largo plazo.
